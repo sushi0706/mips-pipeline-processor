@@ -1,3 +1,4 @@
+//controller module
 module control_unit(
 	input [5:0] funct,
 	input [5:0] opcode,
