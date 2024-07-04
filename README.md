@@ -1,6 +1,6 @@
 # MIPS32 Pipeline Processor
 ## Introduction
-This project is an implementation of a MIPS32 pipeline processor, designed to illustrate the concepts of pipelining in computer architecture. The processor is capable of executing a set of MIPS32 instructions across five pipeline stages: Instruction Fetch, Instruction Decode, Execute, Memory Access, and Write Back.  
+The MIPS32 Pipeline Processor project demonstrates the design and implementation of a MIPS32 architecture with a five-stage pipeline. This processor effectively handles instruction execution by dividing it into five distinct stages: Instruction Fetch, Instruction Decode, Execute, Memory Access, and Write Back. By implementing these stages, the processor can achieve higher instruction throughput compared to a single-cycle processor.  
 ## Implementation
 ### Stages
 1. Instruction Fetch (IF)    
@@ -25,5 +25,5 @@ The MIPS32 pipeline processor currently supports the following instructions:
 ## Tools
 * Verilog compiler (such as Icarus Verilog)  
 * Simulator (such as Modelsim)
-## Reference
+## References
 _Digital Design and Computer Architecture_ by David Money Harris & Sarah L. Harris
