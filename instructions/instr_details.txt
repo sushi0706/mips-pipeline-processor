@@ -1,0 +1,15 @@
+20020005 -> ADDI R2 R0 5 -> R2 = 0 + 5 = 5
+2003000c -> ADDI R3 R0 12 -> R3 = 0 + 12 = 12
+00a42820 -> ADD R5 R5 R4 -> R5 = 5 + 4 = 9
+00e63822 -> SUB R7 R7 R6 -> R7 = 7 - 6 = 1
+014d5025 -> OR R10 R10 R13 -> R10 = 10 | 13 = 15
+01214824 -> AND R9 R1 R9 -> R9 = 9 & 1 = 1
+0181602a -> SLT R12 R12 R1 -> R12 = 12 < 1 = 0
+ac020054 -> STORE R2 84(R0) -> [84] = 5
+0082202a -> SLT R4 R4 R2 -> R4 = 4 < 5 = 1
+10a50003 -> BEQ R5 R5 to_load -> should happen
+01084025 -> OR R8 R8 R8 -> R8 = 8 | 8 = 8 -> dummy instruction
+01084025 -> OR R8 R8 R8 -> R8 = 8 | 8 = 8 -> dummy instruction
+00642824 -> AND R5 R3 R4 -> R5 = 12 & 1 = 0
+8c060054 -> LOAD R6 84(R0) -> R6 = [84] = 5 (to_load)
+00000000 -> HALT (end)
