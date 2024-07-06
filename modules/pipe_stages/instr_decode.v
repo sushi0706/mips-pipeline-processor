@@ -5,20 +5,29 @@ module instr_decode(
 	input [31:0] pc_plus_4,
 	input [31:0] reg_wr_data,
 	input [4:0] reg_wr_addr,
+	input [31:0] mem_alu_result,
 	input reg_wr_en,
-	output id_ex_jump,
+	input flush_ex,
+	input forwardA_id,
+	input forwardB_id,	
+	output id_jump,
 	output id_ex_mem_to_reg_wr,
 	output id_ex_mem_wr_en,
 	output id_ex_alu_src_sel,
 	output id_ex_reg_wr_en,
-	output id_ex_branch,
+	output id_pc_src,
+	output id_branch,
 	output [2:0] id_ex_alu_ctrl,
 	output [4:0] id_ex_reg_wr_addr,
-	output [31:0] id_ex_reg_rd_data1,
-	output [31:0] id_ex_reg_rd_data2,
+	output [4:0] id_rs,
+	output [4:0] id_rt,
+	output [4:0] id_ex_rs,
+	output [4:0] id_ex_rt,
+	output [31:0] id_ex_reg_data1,
+	output [31:0] id_ex_reg_data2,
 	output [31:0] id_ex_sign_imm_ext,
-	output [31:0] id_ex_pc_branch,
-	output [31:0] id_ex_pc_jump
+	output [31:0] id_pc_branch,
+	output [31:0] id_pc_jump
 );
 	
 	wire mem_to_reg_wr;
@@ -27,7 +36,6 @@ module instr_decode(
 	wire reg_file_dst_sel;
 	wire reg_wr_en_temp;
 	wire branch;
-	wire jump;
 	wire [2:0] alu_ctrl;
 	wire [31:0] shl_jump_addr;
 	wire [4:0] reg_wr_addr_temp;
@@ -35,10 +43,14 @@ module instr_decode(
 	wire [31:0] sign_imm_ext_shl;
 	wire [31:0] reg_rd_data1;
 	wire [31:0] reg_rd_data2;
-	wire [31:0] pc_jump;
-	wire [31:0] pc_branch;
+	wire [31:0] reg_data1;
+	wire [31:0] reg_data2;
 	
-	assign pc_jump = {pc_plus_4[31:28], shl_jump_addr};
+	assign id_branch = branch;
+	assign id_pc_jump = {pc_plus_4[31:28], shl_jump_addr};
+	assign id_pc_src = branch && (reg_data1 == reg_data2);
+	assign id_rs = instr[25:21];
+	assign id_rt = instr[20:16];
 	
 	control_unit control_unit_inst(
 		.funct(instr[5:0]),
@@ -46,7 +58,7 @@ module instr_decode(
 		.mem_to_reg_wr(mem_to_reg_wr),
 		.branch(branch),
 		.mem_wr_en(mem_wr_en),
-		.jump(jump),
+		.jump(id_jump),
 		.alu_src_sel(alu_src_sel),
 		.reg_file_dst_sel(reg_file_dst_sel),
 		.reg_wr_en(reg_wr_en_temp),
@@ -64,6 +76,20 @@ module instr_decode(
 		.rd_data2(reg_rd_data2)
 	);
 	
+	mux2 reg_data1_mux_inst(
+		.a(reg_rd_data1),
+		.b(mem_alu_result),
+		.sel(forwardA_id),
+		.out(reg_data1)
+	);
+	
+	mux2 reg_data2_mux_inst(
+		.a(reg_rd_data2),
+		.b(mem_alu_result),
+		.sel(forwardB_id),
+		.out(reg_data2)
+	);
+	
 	sign_ext sign_imm_ext_inst(
 		.a(instr[15:0]),
 		.y(sign_imm_ext)
@@ -77,7 +103,7 @@ module instr_decode(
 	adder pc_branch_inst(
 		.a(pc_plus_4),
 		.b(sign_imm_ext_shl),
-		.sum(pc_branch)
+		.sum(id_pc_branch)
 	);
 	
 	shl_2 jump_trgt_addr_shl_inst(
@@ -94,93 +120,90 @@ module instr_decode(
 	
 	d_ff id_ex_mem_wr_en_inst(
 		.clk(clk),
-		.reset(reset),
+		.reset((reset | flush_ex)),
+		.en(1'b0),
 		.d(mem_wr_en),
 		.q(id_ex_mem_wr_en)
 	); defparam id_ex_mem_wr_en_inst.WIDTH=1;
 	
 	d_ff id_ex_mem_to_reg_wr_inst(
 		.clk(clk),
-		.reset(reset),
+		.reset((reset | flush_ex)),
+		.en(1'b0),
 		.d(mem_to_reg_wr),
 		.q(id_ex_mem_to_reg_wr)
 	); defparam id_ex_mem_to_reg_wr_inst.WIDTH=1;
 	
 	d_ff id_ex_reg_wr_en_inst(
 		.clk(clk),
-		.reset(reset),
+		.reset((reset | flush_ex)),
+		.en(1'b0),
 		.d(reg_wr_en_temp),
 		.q(id_ex_reg_wr_en)
 	); defparam id_ex_reg_wr_en_inst.WIDTH=1;
 	
 	d_ff id_ex_alu_src_sel_inst(
 		.clk(clk),
-		.reset(reset),
+		.reset((reset | flush_ex)),
+		.en(1'b0),
 		.d(alu_src_sel),
 		.q(id_ex_alu_src_sel)
 	); defparam id_ex_alu_src_sel_inst.WIDTH=1;
 	
-	d_ff id_ex_jump_inst(
-		.clk(clk),
-		.reset(reset),
-		.d(jump),
-		.q(id_ex_jump)
-	); defparam id_ex_jump_inst.WIDTH=1;
-	
-	d_ff id_ex_branch_inst(
-		.clk(clk),
-		.reset(reset),
-		.d(branch),
-		.q(id_ex_branch)
-	); defparam id_ex_branch_inst.WIDTH=1;
-	
 	d_ff id_ex_alu_ctrl_inst(
 		.clk(clk),
-		.reset(reset),
+		.reset((reset | flush_ex)),
+		.en(1'b0),
 		.d(alu_ctrl),
 		.q(id_ex_alu_ctrl)
 	); defparam id_ex_alu_ctrl_inst.WIDTH=3;
 	
+	d_ff id_ex_rs_inst(
+		.clk(clk),
+		.reset((reset | flush_ex)),
+		.en(1'b0),
+		.d(instr[25:21]),
+		.q(id_ex_rs)
+	); defparam id_ex_rs_inst.WIDTH=5;
+	
+	d_ff id_ex_rt_inst(
+		.clk(clk),
+		.reset((reset | flush_ex)),
+		.en(1'b0),
+		.d(instr[20:16]),
+		.q(id_ex_rt)
+	); defparam id_ex_rt_inst.WIDTH=5;
+	
 	d_ff id_ex_reg_wr_addr_inst(
 		.clk(clk),
-		.reset(reset),
+		.reset((reset | flush_ex)),
+		.en(1'b0),
 		.d(reg_wr_addr_temp),
 		.q(id_ex_reg_wr_addr)
 	); defparam id_ex_reg_wr_addr_inst.WIDTH=6;
 	
-	d_ff id_ex_reg_rd_data1_inst(
+	d_ff id_ex_reg_data1_inst(
 		.clk(clk),
-		.reset(reset),
-		.d(reg_rd_data1),
-		.q(id_ex_reg_rd_data1)
+		.reset((reset | flush_ex)),
+		.en(1'b0),
+		.d(reg_data1),
+		.q(id_ex_reg_data1)
 	);
 	
-	d_ff id_ex_reg_rd_data2_inst(
+	d_ff id_ex_reg_data2_inst(
 		.clk(clk),
-		.reset(reset),
-		.d(reg_rd_data2),
-		.q(id_ex_reg_rd_data2)
+		.reset((reset | flush_ex)),
+		.en(1'b0),
+		.d(reg_data2),
+		.q(id_ex_reg_data2)
 	);
 	
 	d_ff id_ex_sign_imm_ext_inst(
 		.clk(clk),
-		.reset(reset),
+		.reset((reset | flush_ex)),
+		.en(1'b0),
 		.d(sign_imm_ext),
 		.q(id_ex_sign_imm_ext)
-	);
-	
-	d_ff id_ex_pc_branch_inst(
-		.clk(clk),
-		.reset(reset),
-		.d(pc_branch),
-		.q(id_ex_pc_branch)
-	);
-	
-	d_ff id_ex_pc_jump_inst(
-		.clk(clk),
-		.reset(reset),
-		.d(pc_jump),
-		.q(id_ex_pc_jump)
 	);
 	
 endmodule
