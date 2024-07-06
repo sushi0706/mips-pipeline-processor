@@ -21,7 +21,8 @@ The MIPS32 pipeline processor currently supports the following instructions:
 * `beq` - Branch if Equal  
 * `j` - Jump
 ### Datapath
-![image](https://github.com/sushi0706/mips-pipeline-processor/assets/170224108/42be59ee-724e-446d-8359-7eaf3874ca5b)  
+![image](https://github.com/sushi0706/mips-pipeline-processor/assets/170224108/920233ca-2555-4a43-9681-acc92356f138)
+
 ## Tools
 * Verilog compiler (such as Icarus Verilog)  
 * Simulator (such as Modelsim)
