@@ -8,7 +8,7 @@ module mux3 #(parameter WIDTH=32)(
 );
 
 	assign out = (sel == 2'b10) ? c :
-						((sel == 2'b01) ? b :
-							((sel == 2'b00) ? a : 32'd0));
+			((sel == 2'b01) ? b :
+			((sel == 2'b00) ? a : 32'd0));
 							
 endmodule
