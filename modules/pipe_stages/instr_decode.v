@@ -37,7 +37,7 @@ module instr_decode(
 	wire reg_wr_en_temp;
 	wire branch;
 	wire [2:0] alu_ctrl;
-	wire [31:0] shl_jump_addr;
+	wire [27:0] shl_jump_addr;
 	wire [4:0] reg_wr_addr_temp;
 	wire [31:0] sign_imm_ext;
 	wire [31:0] sign_imm_ext_shl;
@@ -45,6 +45,8 @@ module instr_decode(
 	wire [31:0] reg_rd_data2;
 	wire [31:0] reg_data1;
 	wire [31:0] reg_data2;
+	
+	assign shl_jump_addr = (instr[25:0] << 2);
 	
 	assign id_branch = branch;
 	assign id_pc_jump = {pc_plus_4[31:28], shl_jump_addr};
@@ -105,11 +107,6 @@ module instr_decode(
 		.b(sign_imm_ext_shl),
 		.sum(id_pc_branch)
 	);
-	
-	shl_2 jump_trgt_addr_shl_inst(
-		.shl_in(instr[25:0]),
-		.shl_out(shl_jump_addr)
-	); defparam jump_trgt_addr_shl_inst.WIDTH=28;
 	
 	mux2 reg_file_dst_mux_inst(
 		.a(instr[20:16]),
