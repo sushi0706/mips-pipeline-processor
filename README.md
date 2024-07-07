@@ -1,13 +1,13 @@
 # MIPS32 Pipeline Processor
 ## Introduction
-The MIPS32 Pipeline Processor project demonstrates the design and implementation of a MIPS32 architecture with a five-stage pipeline. This processor effectively handles instruction execution by dividing it into five distinct stages: Instruction Fetch, Instruction Decode, Execute, Memory Access, and Write Back. By implementing these stages, the processor can achieve higher instruction throughput compared to a single-cycle processor.  
+This repository contains the Verilog implementation of a MIPS32 pipeline processor. The design is based on the book "Digital Design and Computer Architecture" by David Money Harris and Sarah L. Harris. The processor includes a 5-stage pipeline: Instruction Fetch (IF), Instruction Decode (ID), Execute (EX), Memory Access (MEM), and Write Back (WB), along with a hazard detection unit to manage data and control hazards.
 ## Implementation
 ### Stages
-1. Instruction Fetch (IF)    
-2. Instruction Decode (ID)  
-3. Execute (EX)  
-4. Memory Access (MEM)  
-5. Write Back (WB)
+1. Instruction Fetch (IF): Fetches the instruction from the instruction memory.  
+2. Instruction Decode (ID): Decodes the fetched instruction and reads the necessary registers.  
+3. Execute (EX): Performs arithmetic or logical operations.  
+4. Memory Access (MEM): Accesses data memory for load and store instructions.
+5. Write Back (WB): Writes the result back to the register file.
 ### Instruction Set
 The MIPS32 pipeline processor currently supports the following instructions:  
 * `add` - Add  
@@ -19,7 +19,9 @@ The MIPS32 pipeline processor currently supports the following instructions:
 * `lw` - Load Word  
 * `sw` - Store Word  
 * `beq` - Branch if Equal  
-* `j` - Jump
+* `j` - Jump  
+### Hazard Unit
+The hazard unit is responsible for detecting and resolving data and control hazards. It ensures that the pipeline operates smoothly without conflicts. The unit implements forwarding and stalling mechanisms to handle different types of hazards.
 ### Datapath
 ![image](https://github.com/sushi0706/mips-pipeline-processor/assets/170224108/920233ca-2555-4a43-9681-acc92356f138)
 
