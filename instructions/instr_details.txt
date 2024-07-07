@@ -2,7 +2,7 @@
 # David_Harris@hmc.edu 9 November 2005
 
 # Test the MIPS processor.
-# add, sub, and, or, slt, addi, lw, sw, beq, j
+# add, sub, and, or, slt, addi, lw, sw, beq
 # If successful, it should write the value 7 to address 84
 
 #       Assembly                Description         Address         Machine
