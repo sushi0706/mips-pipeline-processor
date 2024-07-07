@@ -7,10 +7,10 @@ module alu_decoder(
 
 	always@(*) begin
 		case(alu_op) 
-			2'b00: alu_ctrl=3'b010;					//ADD
-			2'b01: alu_ctrl=3'b110;					//SUB
+			2'b00: alu_ctrl=3'b010;				//ADD
+			2'b01: alu_ctrl=3'b110;				//SUB
 			default: begin
-				case(funct)								//R-type
+				case(funct)				//R-type
 					6'b100000: alu_ctrl=3'b010;	//ADD
 					6'b100010: alu_ctrl=3'b110;	//SUB
 					6'b100100: alu_ctrl=3'b000;	//AND
