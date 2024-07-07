@@ -14,7 +14,7 @@ module alu #(parameter DATA_WIDTH=32)(
 			3'b001: alu_out = a|b;
 			3'b111: begin
 				if (a[31]!=b[31]) alu_out = a[31]?0:1;
-            else alu_out = a<b?1:0;
+            		        else alu_out = a<b?1:0;
 			end
 			default: alu_out = 0;
 		endcase
